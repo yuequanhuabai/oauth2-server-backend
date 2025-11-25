@@ -30,9 +30,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize ->
                 authorize
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/login"))
-                    .permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/register"))
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/oauth/register"))
                     .permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/error"))
                     .permitAll()
@@ -41,14 +39,7 @@ public class SecurityConfig {
                     .anyRequest()
                     .authenticated()
             )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .permitAll()
-            )
+            .httpBasic(httpBasic -> {})
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.ignoringRequestMatchers(
                 AntPathRequestMatcher.antMatcher("/h2-console/**")
