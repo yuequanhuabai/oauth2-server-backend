@@ -1,0 +1,47 @@
+● 这是因为 Spring Authorization Server 的 API 在不同版本中有所变化。让我查看一下 AuthorizationServerConfig
+  并修复这个问题：
+
+● Read(oauth2-server-backend\src\main\java\com\t\a\oauth2server\config\AuthorizationServerConfig.java)
+  ? ?Read 111 lines
+
+● 我明白问题了。在 Spring Authorization Server 1.1.2 中，API 有所变化。让我修复这个方法：
+
+● Update(oauth2-server-backend\src\main\java\com\t\a\oauth2server\config\AuthorizationServerConfig.java)
+  ? ?Updated oauth2-server-backend\src\main\java\com\t\a\oauth2server\config\AuthorizationServerConfig.java with 1
+     addition
+       23    import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+       24    import org.springframework.security.web.SecurityFilterChain;
+       25    import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+       26 +  import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OA
+          + uth2AuthorizationServerConfigurer;
+       27
+       28    import java.security.KeyPair;
+       29    import java.security.KeyPairGenerator;
+
+● 现在修改 authorizationServerSecurityFilterChain 方法：
+
+● Update(oauth2-server-backend\src\main\java\com\t\a\oauth2server\config\AuthorizationServerConfig.java)
+  ? ?Updated oauth2-server-backend\src\main\java\com\t\a\oauth2server\config\AuthorizationServerConfig.java with 1
+     addition and 1 removal
+       40        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+       41                throws Exception {
+       42            OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+       43 -          http.getConfigurer(OAuth2AuthorizationServerConfiguration.class)
+       43 +          http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+       44                .oidc(Customizer.withDefaults());
+       45            http.exceptionHandling(exceptions ->
+       46                exceptions.authenticationEntryPoint(
+
+● 完美！我已经修复了问题。问题在于：
+
+  修复内容
+
+  问题：Spring Authorization Server 1.1.2 中，使用 OAuth2AuthorizationServerConfiguration 作为 configurer
+  不存在，应该使用 OAuth2AuthorizationServerConfigurer。
+
+  修改：
+  1. ? 添加了导入：OAuth2AuthorizationServerConfigurer
+  2. ? 将 http.getConfigurer(OAuth2AuthorizationServerConfiguration.class) 改为
+  http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+
+  现在重新编译和启动应该没有问题了。试试看！?
