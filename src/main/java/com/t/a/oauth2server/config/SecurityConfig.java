@@ -39,10 +39,13 @@ public class SecurityConfig {
                     .anyRequest()
                     .authenticated()
             )
+            .formLogin(form -> form.permitAll())
             .httpBasic(httpBasic -> {})
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.ignoringRequestMatchers(
-                AntPathRequestMatcher.antMatcher("/h2-console/**")
+                AntPathRequestMatcher.antMatcher("/h2-console/**"),
+                AntPathRequestMatcher.antMatcher("/oauth2/**"),
+                AntPathRequestMatcher.antMatcher("/oauth/**")
             ))
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 

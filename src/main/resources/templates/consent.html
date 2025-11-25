@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授權確認</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .consent-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+        }
+
+        .consent-container h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .app-name {
+            text-align: center;
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .permission-section {
+            margin-bottom: 30px;
+        }
+
+        .permission-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+        }
+
+        .permission-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .permission-item label {
+            cursor: pointer;
+            flex: 1;
+            color: #555;
+        }
+
+        .scope-description {
+            font-size: 12px;
+            color: #999;
+            margin-top: 3px;
+            margin-left: 32px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-deny {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-deny:hover {
+            background: #efefef;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <h1>授權確認</h1>
+        <div class="app-name" th:text="${clientName}">OAuth2 Server</div>
+
+        <div class="info-box">
+            應用 <strong th:text="${clientName}">OAuth2 Server</strong> 正在請求訪問你的信息。
+        </div>
+
+        <form method="post" th:action="@{/oauth2/consent}">
+            <input type="hidden" name="client_id" th:value="${clientId}">
+            <input type="hidden" name="state" th:value="${state}">
+            <input type="hidden" name="redirect_uri" th:value="${redirectUri}">
+            <input type="hidden" name="scope" th:value="${#strings.listJoin(scopes, ' ')}">
+
+            <div class="permission-section">
+                <div class="permission-title">請求的權限:</div>
+
+                <div th:each="scope : ${scopes}" class="permission-item">
+                    <input type="checkbox" name="scope_checkbox" th:value="${scope}" checked disabled>
+                    <div>
+                        <label th:text="${scope}">openid</label>
+                        <div class="scope-description" th:switch="${scope}">
+                            <span th:case="'openid'">你的唯一標識</span>
+                            <span th:case="'profile'">你的基本信息（姓名、頭像等）</span>
+                            <span th:case="'email'">你的郵箱地址</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="user_oauth_approval" value="true" class="btn-approve">
+                    授權
+                </button>
+                <button type="submit" name="user_oauth_approval" value="false" class="btn-deny">
+                    拒絕
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+● 演示账号是：
+
+  - 用户名: admin
+  - 密码: 123456
+
+  或者
+
+  - 用户名: user
+  - 密码: password123
+
+  这些账号是在服务器启动时由 DataInitializer 自动初始化的。你可以在这个文件中查看：
+
+  oauth2-server-backend/src/main/java/com/t/a/oauth2server/config/DataInitializer.java
+
+  如果需要添加新账号，可以调用 Server Backend 的注册 API：
+
+  curl -X POST http://localhost:9090/oauth/register \
+    -H "Content-Type: application/json" \
+    -d '{
+      "username": "testuser",
+      "password": "test123",
+      "displayName": "Test User",
+      "email": "test@example.com"
+    }'
